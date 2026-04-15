@@ -1,0 +1,4 @@
+# Cambia estos valores antes de usar OTA real.
+version=0.1.0
+bin_url=https://raw.githubusercontent.com/USUARIO/REPO/main/ota/firmware.bin
+notes=Primer firmware OTA de ejemplo
