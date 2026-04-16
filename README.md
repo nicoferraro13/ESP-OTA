@@ -300,6 +300,12 @@ git@github.com:TU-USUARIO/ESP-OTA.git
 
 Si no estas acostumbrado a Git, te conviene usar la URL `https`.
 
+En este proyecto ya dejamos configurado el repo real en GitHub:
+
+```text
+https://github.com/nicoferraro13/ESP-OTA
+```
+
 ### Paso 3: agregar el remoto
 
 Abre una terminal dentro de la carpeta del proyecto y ejecuta:
@@ -351,10 +357,10 @@ ota/manifest.txt
 3. Hace clic en `Raw`.
 4. Copia la URL que aparece en el navegador.
 
-Debe quedar parecida a esta:
+En este proyecto la URL real es:
 
 ```text
-https://raw.githubusercontent.com/TU-USUARIO/ESP-OTA/main/ota/manifest.txt
+https://raw.githubusercontent.com/nicoferraro13/ESP-OTA/main/ota/manifest.txt
 ```
 
 Esa es la URL que despues vas a pegar en la web del ESP32.
@@ -379,6 +385,19 @@ Eso es correcto.
 ## 19. Como hacer futuras actualizaciones OTA
 
 Cada vez que quieras publicar una nueva version, sigue exactamente este orden.
+
+Tambien puedes automatizar casi todo con el script:
+
+```powershell
+.\scripts\publish-ota.ps1 -Build -Notes "Descripcion corta"
+```
+
+Ese script:
+
+- compila el proyecto si usas `-Build`,
+- copia `.pio\build\esp32devkitv1\firmware.bin` a `ota\firmware.bin`,
+- actualiza `ota\manifest.txt` con la version actual,
+- deja lista la carpeta `ota` para hacer `git add`, `git commit` y `git push`.
 
 ### Paso 1: modificar tu codigo
 
@@ -428,6 +447,12 @@ ota\firmware.bin
 
 Si `ota\firmware.bin` ya existia, reemplazalo.
 
+Si prefieres evitar este paso manual, usa:
+
+```powershell
+.\scripts\publish-ota.ps1
+```
+
 ### Paso 5: actualizar el manifest
 
 Abre:
@@ -440,7 +465,7 @@ Actualiza al menos estas lineas:
 
 ```text
 version=0.1.1
-bin_url=https://raw.githubusercontent.com/TU-USUARIO/ESP-OTA/main/ota/firmware.bin
+bin_url=https://raw.githubusercontent.com/nicoferraro13/ESP-OTA/main/ota/firmware.bin
 notes=Descripcion corta de los cambios
 ```
 
@@ -613,7 +638,71 @@ Tu flujo habitual va a ser este:
 7. Desde la web del ESP32 pulsas `Buscar actualizacion ahora`.
 8. Confirmas la instalacion.
 
-## 25. Archivos que conviene revisar primero si quieres entender el proyecto
+## 25. Prueba OTA real recomendada
+
+Para hacer una primera prueba real y sencilla, sigue este flujo:
+
+1. Sube este proyecto base al repo `nicoferraro13/ESP-OTA`.
+2. Compila el firmware actual.
+3. Ejecuta:
+
+```powershell
+.\scripts\publish-ota.ps1
+```
+
+4. Haz:
+
+```powershell
+git add ota/firmware.bin ota/manifest.txt
+git commit -m "Publica OTA inicial 0.1.0"
+git push
+```
+
+5. Graba el ESP32 por USB con esta misma version `0.1.0`.
+6. Entra al portal web del ESP32.
+7. Carga tu Wi-Fi.
+8. Carga esta URL exacta del manifest:
+
+```text
+https://raw.githubusercontent.com/nicoferraro13/ESP-OTA/main/ota/manifest.txt
+```
+
+9. Pulsa `Buscar actualizacion ahora`.
+
+Como el ESP32 ya tiene la version `0.1.0` y el manifest tambien dice `0.1.0`, no deberia ofrecer update.
+
+Eso es correcto y sirve para validar:
+
+- que el ESP32 tiene Internet,
+- que puede leer el manifest,
+- que la URL es correcta,
+- que la comparacion de version funciona.
+
+10. Luego cambia `platformio.ini` de `0.1.0` a `0.1.1`.
+11. Haz un cambio visible en el codigo, por ejemplo cambiar la velocidad de blink.
+12. Compila otra vez.
+13. Ejecuta:
+
+```powershell
+.\scripts\publish-ota.ps1 -Notes "Blink mas rapido para prueba OTA"
+```
+
+14. Haz:
+
+```powershell
+git add .
+git commit -m "Publica OTA 0.1.1"
+git push
+```
+
+15. Vuelve al portal del ESP32.
+16. Pulsa `Buscar actualizacion ahora`.
+17. Ahora si deberia mostrar una version nueva.
+18. Pulsa `Instalar esta version`.
+19. Espera el reinicio.
+20. Verifica que el comportamiento cambio de verdad.
+
+## 26. Archivos que conviene revisar primero si quieres entender el proyecto
 
 Si quieres leer el codigo de a poco, este es un buen orden:
 
@@ -622,7 +711,7 @@ Si quieres leer el codigo de a poco, este es un buen orden:
 3. `src/main.cpp`
 4. `ota/manifest.txt`
 
-## 26. Nota final importante
+## 27. Nota final importante
 
 La primera grabacion del ESP32 siempre la haces por USB.
 
