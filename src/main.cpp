@@ -414,6 +414,10 @@ String buildPage() {
   const String wifiSsidValue = htmlEscape(config.wifiSsid);
   const String notesValue = otaState.releaseNotes.isEmpty() ? String("Sin notas.")
                                                             : htmlEscape(otaState.releaseNotes);
+  const String manifestExample =
+      String("version=") + AppConfig::FW_VERSION +
+      "\nbin_url=https://raw.githubusercontent.com/nicoferraro13/ESP-OTA/main/ota/firmware.bin"
+      "\nnotes=Tu descripcion";
 
   String html;
   html.reserve(8192);
@@ -545,7 +549,9 @@ String buildPage() {
     html += F("<p>No hay una actualizacion pendiente para instalar.</p>");
   }
 
-  html += F("<p>Manifest recomendado:</p><pre>version=0.1.0\nbin_url=https://raw.githubusercontent.com/USUARIO/REPO/main/ota/firmware.bin\nnotes=Tu descripcion</pre>");
+  html += F("<p>Manifest recomendado:</p><pre>");
+  html += htmlEscape(manifestExample);
+  html += F("</pre>");
   html += F("</div>");
 
   html += F("</div></body></html>");

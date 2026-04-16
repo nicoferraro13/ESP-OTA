@@ -1,4 +1,4 @@
 # Generado por scripts/publish-ota.ps1
-version=0.1.0
+version=0.1.1
 bin_url=https://raw.githubusercontent.com/nicoferraro13/ESP-OTA/main/ota/firmware.bin
-notes=Primer firmware OTA de ejemplo
+notes=Blink mucho mas rapido para prueba OTA
